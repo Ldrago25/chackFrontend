@@ -6,7 +6,6 @@ function userAuthenticated(req, res, next) {
         return res.status(401).send({ response: 'El token es requerido' });
     }
     const token = authorization.replace('Bearer ', '');
-    console.log(token);
     const dataToken = decodeToken(token);
 
     try {

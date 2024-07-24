@@ -1,17 +1,19 @@
 const Messages = require('../models/message');
-
+const { decodeToken } = require("../utils/jwt");
 
 module.exports = {
     index: (req, res) => {
-        getMessages(req, res);
+        const dataToken = decodeToken(req.headers.authorization.split(' ')[1]);
+        getMessages(req, req.query.idFrom, dataToken.user.id, res);
     },
     store: (req, res) => {
+        console.log(req.body);
         Messages.create(req.con, req.body, (error, row) => {
 
             if (error) {
-                res.status(500).send({ response: 'Ha ocurrido un error listando los mensajes' });
+                res.status(500).send({ response: '' + error });
             } else {
-                getMessages(req, res);
+                getMessages(req, req.body.userIdReceives, req.body.userIdToSend, res);
             }
 
         })
@@ -29,8 +31,8 @@ module.exports = {
     }
 }
 
-function getMessages(req, res) {
-    Messages.get(req.con, (error, rows) => {
+function getMessages(req, idFrom, IdToSend, res) {
+    Messages.get(req.con, idFrom, IdToSend, (error, rows) => {
         if (error) {
             res.status(500).send({ response: 'Ha ocurrido un error listando los mensajes' });
         } else {

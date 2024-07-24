@@ -1,6 +1,6 @@
 module.exports = {
-    get: (con, callback) => {
-        con.query('SELECT content, messages.id as id, userId,date,firstName,lastName FROM messages LEFT JOIN users ON messages.userId=users.id', callback);
+    get: (con, idFrom, idToSend, callback) => {
+        con.query(`SELECT content, messages.id as id, userIdToSend, userIdReceives, date,users.firstName, users.lastName FROM messages LEFT JOIN users ON messages.userIdToSend=users.id WHERE ( (userIdToSend = ${idToSend} and userIdReceives =${idFrom}) OR (userIdToSend =${idFrom} and userIdReceives =${idToSend}) )`, callback);
     },
     getById: (con, id, callback) => {
         con.query(`SELECT * FROM messages where id=${id}`, callback);
@@ -10,7 +10,8 @@ module.exports = {
 
         con.query(`INSERT INTO messages SET
             content= '${data.content}',
-            userId= '${data.userId}'
+            userIdToSend= '${data.userIdToSend}',
+            userIdReceives= '${data.userIdReceives}'
             `, callback);
     },
 
